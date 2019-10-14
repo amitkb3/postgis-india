@@ -76,8 +76,7 @@ function initMap() {
 
             info.setPosition(e.latLng);
             // let nearest = (jso.centers.length === 0) ? '' : ('<hr/>Nearest is ' + jso.centers[0].name + ' at ' + (jso.centers[0].distance/1000).toFixed(1) + 'km');
-            info.setContent('<h3>' + jso.st_name + ' / ' + jso.pc_name + '</h3>');
-              // '<hr/>' + jso.centers.length + ' health facilities within 20km of your click' + nearest);
+            info.setContent('<h3>State: ' + jso.st_name + '<br/>Parliament: ' + jso.pc_name + '</h3><hr/>' + jso.cell_count.toLocaleString() + ' cell towers within 5km of your click');
             info.open(map);
           }
         });

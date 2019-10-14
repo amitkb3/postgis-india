@@ -5,9 +5,10 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 try:
+    # postgresql://py:zim@gis.georeactor.com/pyindia
     conn = psycopg2.connect("dbname='pyindia' user='py' host='gis.georeactor.com' password='zim'") # port=####
 except:
-    print("I am unable to connect to the database")
+    print("Server is unable to connect to the database")
 
 cursor = conn.cursor(cursor_factory=RealDictCursor)
 
@@ -23,7 +24,7 @@ def about():
     return a simple list of stats about this point:
     - which state and district is it in?
     -- download the district GeoJSON
-    - how far is it from health facilities?
+    - how many cell towers are nearby?
     """
     cursor.execute("""
             SELECT
@@ -55,6 +56,17 @@ def about():
         ward = cursor.fetchone()
         if ward is not None:
             result["ward"] = ward["geojson"]
+
+        cursor.execute("""
+                SELECT COUNT(*) AS count
+                FROM cell_towers
+                WHERE ST_DWithin(
+                    point,
+                    ST_MakePoint(%s, %s),
+                    5000
+                )""",
+            (request.args.get('lng'), request.args.get('lat')))
+        result["cell_count"] = int(cursor.fetchone()["count"])
 
         return json.dumps(result)
 
